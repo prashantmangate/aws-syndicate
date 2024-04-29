@@ -1,4 +1,4 @@
-# DemoSyndicateJava
+# task01
 
 High level project overview - business value it brings, non-detailed technical overview.
 
@@ -7,9 +7,9 @@ All the technical details described below are actual for the particular
 version, or a range of versions of the software.
 ### Actual for versions: 1.0.0
 
-## DemoSyndicateJava diagram
+## task01 diagram
 
-![DemoSyndicateJava](pics/DemoSyndicateJava_diagram.png)
+![task01](pics/task01_diagram.png)
 
 ## Lambdas descriptions
 
