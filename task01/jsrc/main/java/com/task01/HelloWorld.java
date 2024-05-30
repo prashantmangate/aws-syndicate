@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @LambdaHandler(lambdaName = "hello_world",
-	roleName = "hello_world-role",
+	roleName = "hello_world-test-role",
 	isPublishVersion = false,
 	logsExpiration = RetentionSetting.SYNDICATE_ALIASES_SPECIFIED
 )
