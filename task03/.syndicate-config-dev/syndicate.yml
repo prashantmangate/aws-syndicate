@@ -6,7 +6,3 @@ project_path:
 region: eu-central-1
 resources_prefix: 
 use_temp_creds: false
-expiration: 
-temp_aws_access_key_id: 
-temp_aws_secret_access_key: 
-temp_aws_session_token: 
