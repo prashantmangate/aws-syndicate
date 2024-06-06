@@ -1,8 +1,0 @@
-account_id: 
-deploy_target_bucket: 
-extended_prefix_mode: true
-iam_permissions_boundary: 
-project_path: 
-region: eu-central-1
-resources_prefix: 
-use_temp_creds: false
