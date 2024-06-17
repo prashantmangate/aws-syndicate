@@ -56,7 +56,7 @@ private final DynamoDB DYNAMO_DB = new DynamoDB(AmazonDynamoDBAsyncClientBuilder
 
 			String createdAt = LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME);
 
-			Map<String, AttributeValue> content = (Map<String, AttributeValue>) request.get("content");
+			Map<String, String> content = (Map<String, String>) request.get("content");
 
 			// StringBuilder contentString = new StringBuilder("any map '{'");
 			// for (String key : content.keySet()) {
