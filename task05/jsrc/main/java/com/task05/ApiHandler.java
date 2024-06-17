@@ -42,25 +42,36 @@ private AmazonDynamoDB amazonDynamoDB;
 
 	public Map<String, Object> handleRequest(Map<String, Object> request, Context context) {
 			initDynamoDbClient();
-			System.out.println("Hello from Lambda");
 			System.out.println("Complete Request " + request);
 			Map<String, AttributeValue> resultMap = new HashMap<String, AttributeValue>();	
 			String id = java.util.UUID.randomUUID().toString();
 			int principalId = Integer.parseInt(request.get("principalId").toString());
 			AttributeValue pId = new AttributeValue();
+
 			pId.setN(String.valueOf(principalId));			
+
 			String createdAt = LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME);
-			Map<String, String> content = (Map<String, String>) request.get("content");
-			StringBuilder contentString = new StringBuilder("'content':{");
-			for (String key : content.keySet()) {
-				contentString.append(key + "=" + content.get(key) + ", ");
-			}
-			contentString.append("}");
+
+			Map<String, AttributeValue> content = (Map<String, AttributeValue>) request.get("content");
+
+			// StringBuilder contentString = new StringBuilder("any map '{'");
+			// for (String key : content.keySet()) {
+			// 	contentString.append(key + "=" + content.get(key) + ", ");
+			// }
+			// contentString.append("'}'");
 			AttributeValue contentStr = new AttributeValue();
+			contentStr.setM(content);
+//			Table table = DYNAMO_DB.getTable(TABLE_EVENTS);
 			resultMap.put("id",  new AttributeValue(id));	
 			resultMap.put("principalId",pId);
 			resultMap.put("createdAt", new AttributeValue(createdAt));
 			resultMap.put("body", contentStr);
+			// PutItemOutcome outcome = table.putItem(new Item()
+			// .withPrimaryKey("id", id)
+			// .with("principalId", principalId)
+			// .with("createdAt", createdAt)
+			// .with("body", content));
+			
 			Event event = new Event();
 			event.setBody(content);
 			event.setId(id);
