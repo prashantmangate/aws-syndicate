@@ -57,7 +57,7 @@ private AmazonDynamoDB amazonDynamoDB;
 			}
 			contentString.append("'}'");
 			AttributeValue contentStr = new AttributeValue();
-			contentStr.setS(contentString.toString());
+			contentStr.setS("any map '{' content '}'");
 
 			resultMap.put("id",  new AttributeValue(id));	
 			resultMap.put("principalId",pId);
