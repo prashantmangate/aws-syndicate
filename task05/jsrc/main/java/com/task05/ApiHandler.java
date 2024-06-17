@@ -2,8 +2,10 @@ package com.task05;
 
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBAsyncClientBuilder;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.document.Attribute;
+import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.amazonaws.services.dynamodbv2.document.Item;
 import com.amazonaws.services.dynamodbv2.document.PutItemOutcome;
 import com.amazonaws.services.dynamodbv2.document.Table;
@@ -39,16 +41,18 @@ public class ApiHandler implements RequestHandler<Map<String, Object>, Map<Strin
 private AmazonDynamoDB amazonDynamoDB;
 	private final Regions REGION = Regions.EU_CENTRAL_1;
 	private static final String TABLE_EVENTS = System.getenv("target_events");
+//	private final DynamoDB DYNAMO_DB = new DynamoDB(AmazonDynamoDBAsyncClientBuilder.standard().withRegion(System.getenv("region")).build());
+private final DynamoDB DYNAMO_DB = new DynamoDB(AmazonDynamoDBAsyncClientBuilder.standard().withRegion(REGION).build());
 
 	public Map<String, Object> handleRequest(Map<String, Object> request, Context context) {
-			initDynamoDbClient();
+//			initDynamoDbClient();
 			System.out.println("Complete Request " + request);
-			Map<String, AttributeValue> resultMap = new HashMap<String, AttributeValue>();	
+//			Map<String, AttributeValue> resultMap = new HashMap<String, AttributeValue>();	
 			String id = java.util.UUID.randomUUID().toString();
 			int principalId = Integer.parseInt(request.get("principalId").toString());
-			AttributeValue pId = new AttributeValue();
+//			AttributeValue pId = new AttributeValue();
 
-			pId.setN(String.valueOf(principalId));			
+//			pId.setN(String.valueOf(principalId));			
 
 			String createdAt = LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME);
 
@@ -59,19 +63,13 @@ private AmazonDynamoDB amazonDynamoDB;
 			// 	contentString.append(key + "=" + content.get(key) + ", ");
 			// }
 			// contentString.append("'}'");
-			AttributeValue contentStr = new AttributeValue();
-			contentStr.setM(content);
+			// AttributeValue contentStr = new AttributeValue();
+			// contentStr.setM(content);
 //			Table table = DYNAMO_DB.getTable(TABLE_EVENTS);
-			resultMap.put("id",  new AttributeValue(id));	
-			resultMap.put("principalId",pId);
-			resultMap.put("createdAt", new AttributeValue(createdAt));
-			resultMap.put("body", contentStr);
-			// PutItemOutcome outcome = table.putItem(new Item()
-			// .withPrimaryKey("id", id)
-			// .with("principalId", principalId)
-			// .with("createdAt", createdAt)
-			// .with("body", content));
-			
+			// resultMap.put("id",  new AttributeValue(id));	
+			// resultMap.put("principalId",pId);
+			// resultMap.put("createdAt", new AttributeValue(createdAt));
+			// resultMap.put("body", contentStr);
 			Event event = new Event();
 			event.setBody(content);
 			event.setId(id);
@@ -79,13 +77,13 @@ private AmazonDynamoDB amazonDynamoDB;
 			event.setPrincipalId(principalId);
 
 			try{
-//				Table table = DYNAMO_DB.getTable(TABLE_EVENTS);
-				amazonDynamoDB.putItem(TABLE_EVENTS, resultMap);
-				// PutItemOutcome outcome = table.putItem(new Item()
-				// 				.withPrimaryKey("id", id)
-				// 		.with("principalId", principalId)
-				// 		.with("createdAt", createdAt)
-				// 		.with("body", content));
+				Table table = DYNAMO_DB.getTable(TABLE_EVENTS);
+//				amazonDynamoDB.putItem(TABLE_EVENTS, resultMap);
+				PutItemOutcome outcome = table.putItem(new Item()
+								.withPrimaryKey("id", id)
+						.with("principalId", principalId)
+						.with("createdAt", createdAt)
+						.with("body", content));
 				System.out.println("Item event saved in dynamodb");
 				Map<String, Object> responseMap = new HashMap<String, Object>();
 				responseMap.put("statusCode", 201);
@@ -99,7 +97,7 @@ private AmazonDynamoDB amazonDynamoDB;
 			}
 		}
 
-		private void initDynamoDbClient() {
-	         this.amazonDynamoDB = AmazonDynamoDBClientBuilder.standard().withRegion(REGION).build();	
-     	}
+		// private void initDynamoDbClient() {
+	    //      this.amazonDynamoDB = AmazonDynamoDBClientBuilder.standard().withRegion(REGION).build();	
+     	// }
 }
