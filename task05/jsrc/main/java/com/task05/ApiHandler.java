@@ -51,14 +51,12 @@ private AmazonDynamoDB amazonDynamoDB;
 			pId.setN(String.valueOf(principalId));			
 			String createdAt = LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME);
 			Map<String, String> content = (Map<String, String>) request.get("content");
-			StringBuilder contentString = new StringBuilder("any map '{'");
+			StringBuilder contentString = new StringBuilder("'content':{");
 			for (String key : content.keySet()) {
 				contentString.append(key + "=" + content.get(key) + ", ");
 			}
-			contentString.append("'}'");
+			contentString.append("}");
 			AttributeValue contentStr = new AttributeValue();
-			contentStr.setS("\"any map '{' content '}'\"");
-
 			resultMap.put("id",  new AttributeValue(id));	
 			resultMap.put("principalId",pId);
 			resultMap.put("createdAt", new AttributeValue(createdAt));
