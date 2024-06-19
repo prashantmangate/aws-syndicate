@@ -43,31 +43,21 @@ public class AuditProducer implements RequestHandler<DynamodbEvent, Void> {
 	@Override
 	public Void handleRequest(DynamodbEvent dynamodbEvent, Context context) {
 
-	   System.out.println("Inside handleRequest and received dynamoDBEvent " + dynamodbEvent);
+	   System.out.println("dynamoDBEvent triggered event" + dynamodbEvent);
+
       Table table = DYNAMO_DB.getTable(TABLE_AUDIT);
       String id = java.util.UUID.randomUUID().toString();
 
       for (DynamodbEvent.DynamodbStreamRecord record : dynamodbEvent.getRecords()) {
-          // Check if it's an updated record
           System.out.println("Iterating event records " + record);
-          System.out.println("Event Name is Modify");
-          // Extract the updated record
-          // Here you'll have access to the new and old images of the record
-          // Perform necessary processing on the updated record
-          // Example: Accessing the new image
+  
           Map<String, AttributeValue> newImage = record.getDynamodb().getNewImage();
-          System.out.println("New Updated Object " + newImage);
-          // Example: Accessing the old image
+          System.out.println("New Object " + newImage);
           Map<String, AttributeValue> oldImage = record.getDynamodb().getOldImage();
-          if(oldImage!=null)
-             System.out.println("Old Object "+oldImage );
-          // Add logic to process the updated record and add it to the new table
-          // AddNewRecordToNewTable(newImage);
-
-          System.out.println("table name Object " + table.getTableName());
-          // Create a map of attributes for the item
+          System.out.println("Old Object "+oldImage);
 
           if (record.getEventName().equals("MODIFY")) {
+            System.out.println("Event Name is Modify");
                if(oldImage==null) {
                   this.addItemtoAuditOnInsertEvent(table,id, newImage);
 		   	   } else if(oldImage.isEmpty()) {
@@ -81,33 +71,32 @@ public class AuditProducer implements RequestHandler<DynamodbEvent, Void> {
           } else if (record.getEventName().equals("REMOVE")) {
              System.out.println("Old Object " + oldImage);
              this.addItemtoAuditOnUpdateEvent(table,id, newImage,oldImage);
-          } else {
-             System.out.println("Event Name is Unknown " + record.getEventName() );
-             // Handle other types of events, if necessary
-          }
+          } 
        }
-	return null;
-
+      return null;
 	}
+ 
    private void addItemtoAuditOnUpdateEvent(Table table,String id, Map<String, AttributeValue> newImage,Map<String, AttributeValue> oldImage){
-      String modificationDate = LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME);
 
-                PutItemOutcome outcome = table.putItem(new Item()
-                      .withPrimaryKey("id", id)
-                      .with("modificationDate", modificationDate)
-                      .with("itemKey", newImage.get("key").getS())
-                      .with("updatedAttribute", "value")
-                      .with("oldValue", Integer.parseInt(oldImage.get("value").getN()))
-                      .with("newValue", Integer.parseInt(newImage.get("value").getN())));
+      String modificationDate = LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME);
+      table.putItem(new Item()
+            .withPrimaryKey("id", id)
+            .with("modificationDate", modificationDate)
+            .with("itemKey", newImage.get("key").getS())
+            .with("updatedAttribute", "value")
+            .with("oldValue", Integer.parseInt(oldImage.get("value").getN()))
+            .with("newValue", Integer.parseInt(newImage.get("value").getN())));
+                      
    }
 
    private void addItemtoAuditOnInsertEvent(Table table,String id, Map<String, AttributeValue> newImage){
+      
       String modificationDate = LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME);
-
       Map<String,Object> newKeyMap = new HashMap<>();
+
       newKeyMap.put("key", newImage.get("key").getS());
       newKeyMap.put("value", Integer.parseInt(newImage.get("value").getS()));
-      PutItemOutcome outcome = table.putItem(new Item()
+      table.putItem(new Item()
             .withPrimaryKey("id", id)
             .with("modificationDate", modificationDate)
             .with("itemKey", newImage.get("key").getS())
