@@ -81,7 +81,7 @@ public class AuditProducer implements RequestHandler<DynamodbEvent, Void> {
       String modificationDate = LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME);
       table.putItem(new Item()
             .withPrimaryKey("id", id)
-            .with("modificationDate", modificationDate)
+            .with("modificationTime", modificationDate)
             .with("itemKey", newImage.get("key").getS())
             .with("updatedAttribute", "value")
             .with("oldValue", Integer.parseInt(oldImage.get("value").getN()))
@@ -98,7 +98,7 @@ public class AuditProducer implements RequestHandler<DynamodbEvent, Void> {
       newKeyMap.put("value", Integer.parseInt(newImage.get("value").getN()));
       table.putItem(new Item()
             .withPrimaryKey("id", id)
-            .with("modificationDate", modificationDate)
+            .with("modificationTime", modificationDate)
             .with("itemKey", newImage.get("key").getS())
             .with("newValue", newKeyMap));
    }
