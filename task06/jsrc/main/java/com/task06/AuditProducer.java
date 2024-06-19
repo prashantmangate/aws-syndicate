@@ -44,7 +44,11 @@ public class AuditProducer implements RequestHandler<DynamodbEvent, Void> {
 	public Void handleRequest(DynamodbEvent dynamodbEvent, Context context) {
 
 	   System.out.println("Inside handleRequest and received dynamoDBEvent " + dynamodbEvent);
-       for (DynamodbEvent.DynamodbStreamRecord record : dynamodbEvent.getRecords()) {
+      Table table = DYNAMO_DB.getTable(TABLE_AUDIT);
+      String id = java.util.UUID.randomUUID().toString();
+      String modificationDate = LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME);
+
+      for (DynamodbEvent.DynamodbStreamRecord record : dynamodbEvent.getRecords()) {
           // Check if it's an updated record
           System.out.println("Iterating event records " + record);
           System.out.println("Event Name is Modify");
@@ -61,11 +65,8 @@ public class AuditProducer implements RequestHandler<DynamodbEvent, Void> {
           // Add logic to process the updated record and add it to the new table
           // AddNewRecordToNewTable(newImage);
 
-          Table table = DYNAMO_DB.getTable(TABLE_AUDIT);
           System.out.println("table name Object " + table.getTableName());
           // Create a map of attributes for the item
-          String id = java.util.UUID.randomUUID().toString();
-          String modificationDate = LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME);
 
           if (record.getEventName().equals("MODIFY")) {
                if(oldImage==null) {
@@ -93,10 +94,10 @@ public class AuditProducer implements RequestHandler<DynamodbEvent, Void> {
                 PutItemOutcome outcome = table.putItem(new Item()
                       .withPrimaryKey("id", id)
                       .with("modificationDate", modificationDate)
-                      .with("itemKey", newImage.get("key").toString())
+                      .with("itemKey", newImage.get("key").getS())
                       .with("updatedAttribute", "value")
-                      .with("oldValue", oldImage.get("value").toString())
-                      .with("newValue", newImage.get("value").toString()));
+                      .with("oldValue", Integer.parseInt(oldImage.get("value").getN()))
+                      .with("newValue", Integer.parseInt(newImage.get("value").getN())));
    }
 
    private void addItemtoAuditOnInsertEvent(Table table,String id, Map<String, AttributeValue> newImage, String modificationDate){
@@ -106,7 +107,7 @@ public class AuditProducer implements RequestHandler<DynamodbEvent, Void> {
       PutItemOutcome outcome = table.putItem(new Item()
             .withPrimaryKey("id", id)
             .with("modificationDate", modificationDate)
-            .with("itemKey", newImage.get("key").toString())
+            .with("itemKey", newImage.get("key").getS())
             .with("newValue", newKeyMap));
    }
 }
