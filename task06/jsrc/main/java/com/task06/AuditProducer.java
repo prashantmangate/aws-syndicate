@@ -95,7 +95,7 @@ public class AuditProducer implements RequestHandler<DynamodbEvent, Void> {
       Map<String,Object> newKeyMap = new HashMap<>();
 
       newKeyMap.put("key", newImage.get("key").getS());
-      newKeyMap.put("value", Integer.parseInt(newImage.get("value").getS()));
+      newKeyMap.put("value", Integer.parseInt(newImage.get("value").getN()));
       table.putItem(new Item()
             .withPrimaryKey("id", id)
             .with("modificationDate", modificationDate)
