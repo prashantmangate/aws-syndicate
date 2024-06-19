@@ -46,7 +46,6 @@ public class AuditProducer implements RequestHandler<DynamodbEvent, Void> {
 	   System.out.println("Inside handleRequest and received dynamoDBEvent " + dynamodbEvent);
       Table table = DYNAMO_DB.getTable(TABLE_AUDIT);
       String id = java.util.UUID.randomUUID().toString();
-      String modificationDate = LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME);
 
       for (DynamodbEvent.DynamodbStreamRecord record : dynamodbEvent.getRecords()) {
           // Check if it's an updated record
@@ -70,18 +69,18 @@ public class AuditProducer implements RequestHandler<DynamodbEvent, Void> {
 
           if (record.getEventName().equals("MODIFY")) {
                if(oldImage==null) {
-                  this.addItemtoAuditOnInsertEvent(table,id, newImage, modificationDate);
+                  this.addItemtoAuditOnInsertEvent(table,id, newImage);
 		   	   } else if(oldImage.isEmpty()) {
-                  this.addItemtoAuditOnInsertEvent(table,id, newImage, modificationDate);
+                  this.addItemtoAuditOnInsertEvent(table,id, newImage);
                } else {
-                this.addItemtoAuditOnUpdateEvent(table,id, newImage,oldImage, modificationDate);
+                this.addItemtoAuditOnUpdateEvent(table,id, newImage,oldImage);
                }
           } else if (record.getEventName().equals("INSERT")) {
              System.out.println("Event Name is INSERT");
-             this.addItemtoAuditOnInsertEvent(table,id, newImage, modificationDate);
+             this.addItemtoAuditOnInsertEvent(table,id, newImage);
           } else if (record.getEventName().equals("REMOVE")) {
              System.out.println("Old Object " + oldImage);
-             this.addItemtoAuditOnUpdateEvent(table,id, newImage,oldImage, modificationDate);
+             this.addItemtoAuditOnUpdateEvent(table,id, newImage,oldImage);
           } else {
              System.out.println("Event Name is Unknown " + record.getEventName() );
              // Handle other types of events, if necessary
@@ -90,7 +89,9 @@ public class AuditProducer implements RequestHandler<DynamodbEvent, Void> {
 	return null;
 
 	}
-   private void addItemtoAuditOnUpdateEvent(Table table,String id, Map<String, AttributeValue> newImage,Map<String, AttributeValue> oldImage, String modificationDate){
+   private void addItemtoAuditOnUpdateEvent(Table table,String id, Map<String, AttributeValue> newImage,Map<String, AttributeValue> oldImage){
+      String modificationDate = LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME);
+
                 PutItemOutcome outcome = table.putItem(new Item()
                       .withPrimaryKey("id", id)
                       .with("modificationDate", modificationDate)
@@ -100,10 +101,12 @@ public class AuditProducer implements RequestHandler<DynamodbEvent, Void> {
                       .with("newValue", Integer.parseInt(newImage.get("value").getN())));
    }
 
-   private void addItemtoAuditOnInsertEvent(Table table,String id, Map<String, AttributeValue> newImage, String modificationDate){
-      Map<String,String> newKeyMap = new HashMap<>();
-      newKeyMap.put("key", String.valueOf(newImage.get("key")));
-      newKeyMap.put("value", String.valueOf(newImage.get("value")));
+   private void addItemtoAuditOnInsertEvent(Table table,String id, Map<String, AttributeValue> newImage){
+      String modificationDate = LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME);
+
+      Map<String,Object> newKeyMap = new HashMap<>();
+      newKeyMap.put("key", newImage.get("key").getS());
+      newKeyMap.put("value", Integer.parseInt(newImage.get("value").getS()));
       PutItemOutcome outcome = table.putItem(new Item()
             .withPrimaryKey("id", id)
             .with("modificationDate", modificationDate)
