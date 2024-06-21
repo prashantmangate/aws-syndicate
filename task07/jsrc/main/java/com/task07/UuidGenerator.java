@@ -63,11 +63,12 @@ public class UuidGenerator implements RequestHandler<ScheduledEvent, Void> {
         var result = new Result(ids);
         var json = convertObjectToJson(result);
 
-        String timestamp = DateTimeFormatter.ISO_INSTANT.format(Instant.now());
-       // String tempDir = System.getProperty("java.io.tmpdir");
-        String filename = timestamp;//tempDir + File.separator + timestamp.replace(":", "_") + ".json";
+
+        String timestamp = DateTimeFormatter.ISO_DATE_TIME.format(Instant.now());
+        String tempDir = System.getProperty("java.io.tmpdir");
+        String filename = timestamp;
         context.getLogger().log("filename " + filename);
-        File file = new File(filename);
+        File file = new File(tempDir + File.separator + filename);
         try {
             Path newFilePath = Paths.get(filename);
             Files.createFile(newFilePath);
