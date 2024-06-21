@@ -1,26 +1,142 @@
 package com.task07;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.UUID;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
+import com.amazonaws.services.lambda.runtime.events.ScheduledEvent;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.syndicate.deployment.annotations.environment.EnvironmentVariable;
 import com.syndicate.deployment.annotations.lambda.LambdaHandler;
+import com.syndicate.deployment.annotations.resources.DependsOn;
+import com.syndicate.deployment.model.ResourceType;
 import com.syndicate.deployment.model.RetentionSetting;
-
-import java.util.HashMap;
-import java.util.Map;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import com.syndicate.deployment.annotations.events.RuleEventSource;
 
 @LambdaHandler(lambdaName = "uuid_generator",
 	roleName = "uuid_generator-role",
-	isPublishVersion = true,
-	aliasName = "${lambdas_alias_name}",
+	isPublishVersion = false,
 	logsExpiration = RetentionSetting.SYNDICATE_ALIASES_SPECIFIED
 )
-public class UuidGenerator implements RequestHandler<Object, Map<String, Object>> {
 
-	public Map<String, Object> handleRequest(Object request, Context context) {
-		System.out.println("Hello from lambda");
-		Map<String, Object> resultMap = new HashMap<String, Object>();
-		resultMap.put("statusCode", 200);
-		resultMap.put("body", "Hello from Lambda");
-		return resultMap;
+
+@RuleEventSource(
+targetRule="uuid_trigger"
+)
+
+@DependsOn(
+	name = "uuid_trigger",
+	resourceType = ResourceType.CLOUDWATCH_RULE
+)
+
+@EnvironmentVariable (key = "bucket_name", value = "${bucket_name}")
+@EnvironmentVariable (key = "region", value = "${region}")
+public class UuidGenerator implements RequestHandler<ScheduledEvent, Void> {
+	
+	private static final String BUCKET_NAME = System.getenv("bucket_name");
+	private static final Region REGION = Region.EU_CENTRAL_1;//System.getenv("region");
+    private static final ObjectMapper objectMapper = new ObjectMapper();
+
+	@Override
+	public Void handleRequest(ScheduledEvent event, Context context) {
+	
+		List<String> ids = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            ids.add(UUID.randomUUID().toString());
+        }
+
+        var result = new Result(ids);
+        var json = convertObjectToJson(result);
+
+        String timestamp = DateTimeFormatter.ISO_INSTANT.format(Instant.now());
+        String tempDir = System.getProperty("java.io.tmpdir");
+        String filename = tempDir + File.separator + timestamp.replace(":", "_") + ".json";
+        context.getLogger().log("filename " + filename);
+        File file = new File(filename);
+        try {
+            Path newFilePath = Paths.get(filename);
+            Files.createFile(newFilePath);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        try (FileWriter fileWriter = new FileWriter(file)) {
+            fileWriter.write(json);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        context.getLogger().log("File created");
+
+		S3Client s3 = S3Client.builder()
+                .region(REGION)
+                .build();
+
+        PutObjectRequest putObjectRequest = PutObjectRequest
+		.builder()
+		.bucket(BUCKET_NAME)
+		.key(filename)
+		.build();//(BUCKET_NAME, timestamp + ".json", file);
+        
+		s3.putObject(putObjectRequest,RequestBody.fromFile(file));
+        
+		context.getLogger().log("Object put");
+        try {
+            Files.delete(Paths.get(filename));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        context.getLogger().log("File uploaded successfully: " + filename);
+
+        return null;
 	}
+
+	private static String convertObjectToJson(Object object) {
+        try {
+            return objectMapper.writeValueAsString(object);
+        } catch (JsonProcessingException e) {
+            throw new IllegalArgumentException("Object cannot be converted to JSON: " + object);
+        }
+    }
+
+    static class Result {
+        private List<String> ids;
+
+        public Result() {
+        }
+
+        public Result(List<String> ids) {
+            this.ids = ids;
+        }
+
+        public List<String> getIds() {
+            return ids;
+        }
+
+        public void setIds(List<String> ids) {
+            this.ids = ids;
+        }
+
+        @Override
+        public String toString() {
+            return "Result{" +
+                    "ids=" + ids +
+                    '}';
+        }
+    }
 }
