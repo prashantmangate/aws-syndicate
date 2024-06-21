@@ -44,12 +44,12 @@ targetRule="uuid_trigger"
 	resourceType = ResourceType.CLOUDWATCH_RULE
 )
 
-@EnvironmentVariable (key = "bucket_name", value = "${bucket_name}")
+@EnvironmentVariable (key = "bucket_name", value = "${target_bucket}")
 @EnvironmentVariable (key = "region", value = "${region}")
 public class UuidGenerator implements RequestHandler<ScheduledEvent, Void> {
 	
 	private static final String BUCKET_NAME = System.getenv("bucket_name");
-	private static final Region REGION = Region.EU_CENTRAL_1;//System.getenv("region");
+	private static final Region REGION = Region.EU_CENTRAL_1;
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
 	@Override
