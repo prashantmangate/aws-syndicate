@@ -6,9 +6,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -64,23 +66,25 @@ public class UuidGenerator implements RequestHandler<ScheduledEvent, Void> {
         var json = convertObjectToJson(result);
 
 
-        String timestamp = DateTimeFormatter.ISO_DATE_TIME.format(Instant.now());
-        String tempDir = System.getProperty("java.io.tmpdir");
-        String filename = timestamp;
-        context.getLogger().log("filename " + filename);
-        File file = new File(tempDir + File.separator + filename);
-        try {
-            Path newFilePath = Paths.get(filename);
+        String timeStamp = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.S").format(Calendar.getInstance().getTime());
+        System.out.println(timeStamp);
+
+        File file = null;
+        String tempDir = "";
+         try {
+             tempDir = System.getProperty("java.io.tmpdir");
+            file = new File(tempDir + File.separator +timeStamp.replace(":", "_")+ ".json");
+            Path newFilePath = Paths.get(file.toURI());
             Files.createFile(newFilePath);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
         try (FileWriter fileWriter = new FileWriter(file)) {
             fileWriter.write(json);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
         context.getLogger().log("File created");
 
 		S3Client s3 = S3Client.builder()
@@ -90,19 +94,19 @@ public class UuidGenerator implements RequestHandler<ScheduledEvent, Void> {
         PutObjectRequest putObjectRequest = PutObjectRequest
 		.builder()
 		.bucket(BUCKET_NAME)
-		.key(filename)
+		.key(timeStamp)
 		.build();//(BUCKET_NAME, timestamp + ".json", file);
         
 		s3.putObject(putObjectRequest,RequestBody.fromFile(file));
         
 		context.getLogger().log("Object put");
         try {
-            Files.delete(Paths.get(filename));
+            Files.delete(Paths.get(tempDir + File.separator +timeStamp.replace(":", "_")+ ".json"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
-        context.getLogger().log("File uploaded successfully: " + filename);
+        context.getLogger().log("File uploaded successfully: " + tempDir + File.separator +timeStamp.replace(":", "_")+ ".json");
 
         return null;
 	}
