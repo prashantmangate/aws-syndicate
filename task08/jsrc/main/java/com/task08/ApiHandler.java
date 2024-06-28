@@ -19,20 +19,30 @@ import java.util.Map;
 
 @LambdaHandler(lambdaName = "api_handler",
 	roleName = "api_handler-role",
-	isPublishVersion = false,
-	logsExpiration = RetentionSetting.SYNDICATE_ALIASES_SPECIFIED
+	isPublishVersion = true,
+	logsExpiration = RetentionSetting.SYNDICATE_ALIASES_SPECIFIED,
+	layers = "WeatherReportApi"
 )
 
 @LambdaLayer(layerName = "WeatherReportApi",
-		libraries = {"/java/lib/commons-lang3-3.14.0.jar", "/java/lib/gson-2.10.1.jar","/java/lib/WeatherReportApi-1.0-SNAPSHOT.jar"},
+		libraries = {"java/lib/commons-lang3-3.14.0.jar", "java/lib/gson-2.10.1.jar","java/lib/WeatherReportApi-1.0-SNAPSHOT.jar"},
 		runtime = DeploymentRuntime.JAVA11,
 		architectures = {Architecture.ARM64},
 		artifactExtension = ArtifactExtension.ZIP)
-
 @LambdaUrlConfig(
 		authType = AuthType.NONE,
 		invokeMode = InvokeMode.BUFFERED
 )
+// Tomorrow take reference of this doc
+// https://github.com/epam/aws-syndicate/blob/master/examples/java/demo-layer-url/pom.xml
+// lambda function not deployed after changing in pom .xml
+
+// build error fix and lambda deployed but not getting
+// below issue
+// {
+//  "errorMessage": "Error loading class com.task08.ApiHandler: com/task08/ApiHandler has been compiled by a more recent version of the Java Runtime (class file version 61.0), this version of the Java Runtime only recognizes class file versions up to 55.0",
+//  "errorType": "java.lang.UnsupportedClassVersionError"
+//}
 public class ApiHandler implements RequestHandler<Object, Map<String, Object>> {
 
 	private final Gson gson = new Gson();

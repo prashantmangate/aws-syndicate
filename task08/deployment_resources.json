@@ -14,7 +14,9 @@
             "dynamodb:DeleteItem",
             "ssm:PutParameter",
             "ssm:GetParameter",
-            "kms:Decrypt"
+            "kms:Decrypt",
+            "lambda:AddPermission",
+            "lambda:AddLayerVersionPermission"
           ],
           "Effect": "Allow",
           "Resource": "*"
@@ -30,6 +32,9 @@
     "custom_policies": [
       "lambda-basic-execution"
     ],
-    "resource_type": "iam_role"
+    "resource_type": "iam_role",
+    "allowed_accounts": [
+      "${account_id}"
+    ]
   }
 }
