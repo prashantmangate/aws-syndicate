@@ -14,9 +14,7 @@
             "dynamodb:DeleteItem",
             "ssm:PutParameter",
             "ssm:GetParameter",
-            "kms:Decrypt",
-            "lambda:AddPermission",
-            "lambda:AddLayerVersionPermission"
+            "kms:Decrypt"
           ],
           "Effect": "Allow",
           "Resource": "*"
