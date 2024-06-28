@@ -11,8 +11,8 @@
     <properties>
         <maven-shade-plugin.version>3.5.2</maven-shade-plugin.version>
         <syndicate.java.plugin.version>1.11.0</syndicate.java.plugin.version>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <src.dir>jsrc/main/java</src.dir>
         <resources.dir>jsrc/main/resources</resources.dir>
@@ -35,6 +35,7 @@
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-lambda-java-events</artifactId>
             <version>2.2.5</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>demo.custom.sdk</groupId>
@@ -73,7 +74,7 @@
                 <version>${syndicate.java.plugin.version}</version>
                 <configuration>
                     <packages>
-                        <package>com.demolayerurl</package>
+                        <package>com.task08</package>
                     </packages>
                     <fileName>${project.name}-${project.version}.jar</fileName>
                 </configuration>
@@ -117,4 +118,5 @@
             </plugin>
         </plugins>
     </build>
+
 </project>
