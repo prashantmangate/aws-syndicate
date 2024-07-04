@@ -22,7 +22,8 @@
             "cognito-idp:ListUserPools",
             "cognito-idp:ListUserPoolClients",
             "cognito-idp:AdminRespondToAuthChallenge",
-            "cognito-idp:AdminConfirmSignUp"
+            "cognito-idp:AdminConfirmSignUp",
+            "cognito-idp:AdminUpdateUserAttributes"
           ],
           "Effect": "Allow",
           "Resource": "*"
@@ -85,7 +86,7 @@
         }
       },
       "/signup": {
-        "enable_cors": true,
+        "enable_cors": false,
         "POST": {
           "authorization_type": "NONE",
           "integration_type": "lambda",
