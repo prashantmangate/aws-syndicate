@@ -6,8 +6,10 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import com.amazonaws.regions.Region;
+import com.amazonaws.regions.Regions;
 import com.amazonaws.services.cognitoidp.AWSCognitoIdentityProvider;
 import com.amazonaws.services.cognitoidp.AWSCognitoIdentityProviderClientBuilder;
 import com.amazonaws.services.cognitoidp.model.AddCustomAttributesRequest;
@@ -20,6 +22,8 @@ import com.amazonaws.services.cognitoidp.model.AdminInitiateAuthResult;
 import com.amazonaws.services.cognitoidp.model.AdminRespondToAuthChallengeRequest;
 import com.amazonaws.services.cognitoidp.model.AdminRespondToAuthChallengeResult;
 import com.amazonaws.services.cognitoidp.model.AdminUpdateUserAttributesRequest;
+import com.amazonaws.services.cognitoidp.model.AssociateSoftwareTokenRequest;
+import com.amazonaws.services.cognitoidp.model.AssociateSoftwareTokenResult;
 import com.amazonaws.services.cognitoidp.model.AttributeType;
 import com.amazonaws.services.cognitoidp.model.AuthFlowType;
 import com.amazonaws.services.cognitoidp.model.ChallengeNameType;
@@ -30,9 +34,25 @@ import com.amazonaws.services.cognitoidp.model.ListUserPoolsResult;
 import com.amazonaws.services.cognitoidp.model.SignUpRequest;
 import com.amazonaws.services.cognitoidp.model.SignUpResult;
 import com.amazonaws.services.cognitoidp.model.UserPoolDescriptionType;
+import com.amazonaws.services.cognitoidp.model.VerifySoftwareTokenRequest;
+import com.amazonaws.services.cognitoidp.model.VerifySoftwareTokenResult;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBAsyncClientBuilder;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
+import com.amazonaws.services.dynamodbv2.document.DynamoDB;
+import com.amazonaws.services.dynamodbv2.document.Item;
+import com.amazonaws.services.dynamodbv2.document.ItemCollection;
+import com.amazonaws.services.dynamodbv2.document.PutItemOutcome;
+import com.amazonaws.services.dynamodbv2.document.ScanOutcome;
+import com.amazonaws.services.dynamodbv2.document.Table;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.amazonaws.services.dynamodbv2.model.ScanRequest;
+import com.amazonaws.services.dynamodbv2.model.ScanResult;
+import com.amazonaws.services.dynamodbv2.xspec.ScanExpressionSpec;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.stream.JsonReader;
 import com.syndicate.deployment.annotations.environment.EnvironmentVariable;
 import com.syndicate.deployment.annotations.environment.EnvironmentVariables;
@@ -74,15 +94,15 @@ import com.syndicate.deployment.model.RetentionSetting;
 public class ApiHandler implements RequestHandler<Object, Map<String, Object>> {
 
 	private static final String USER_POOL = System.getenv("userpool");
-	//private static final Region REGION = ;
+	private final Regions REGION = Regions.EU_CENTRAL_1;
+	private static final String TABLE_TABLE = System.getenv("tables_table");
+	private final DynamoDB DYNAMO_DB = new DynamoDB(AmazonDynamoDBAsyncClientBuilder.standard().withRegion(REGION).build());
 	private final Gson gson = new Gson();
-
-	//private CognitoIdentityProviderClient identityProviderClient;
 	private AWSCognitoIdentityProvider cognitoClient;
+
 	public Map<String, Object> handleRequest(Object request, Context context) {
 		
-	//	identityProviderClient = CognitoIdentityProviderClient.builder().region(REGION).build();
-	cognitoClient = AWSCognitoIdentityProviderClientBuilder.defaultClient();
+		cognitoClient = AWSCognitoIdentityProviderClientBuilder.defaultClient();
 
 		Map<String, Object> resultMap = new HashMap<String, Object>();
 		
@@ -134,58 +154,16 @@ public class ApiHandler implements RequestHandler<Object, Map<String, Object>> {
 			cognitoClient.adminUpdateUserAttributes(reqAttr);
 
 
-			//create user : ENd
 			System.out.println("user confirmed"+response.getSdkResponseMetadata());
 			System.out.println("after confirmed signup "+user.toString());
-			Map<String,String> initialParams = new HashMap<String,String>();
-            initialParams.put("USERNAME", user.getEmail());
-            initialParams.put("PASSWORD", user.getPassword());
-	
-	
 
-			AdminInitiateAuthRequest authRequest = 
-			new AdminInitiateAuthRequest()
-                    .withAuthFlow(AuthFlowType.ADMIN_NO_SRP_AUTH.name())
-                    .withAuthParameters(initialParams)
-                    .withClientId(getClientId())
-                    .withUserPoolId(getUserPoolId());
-
-
-			AdminInitiateAuthResult initialResponse = null;
-			System.out.println("Client Id"+getClientId()+" user pool id "+getUserPoolId());
-//			try{
-		  			// System.out.print("Confirm signup : admin initiate auth called after signup");
-
-			        //  initialResponse = cognitoClient.adminInitiateAuth(authRequest);
-					//  System.out.println("response after admin auth: "+initialResponse.toString());
-					//  System.out.println("adminInitiateAuth challenge session "+initialResponse.getSession());
-					//  System.out.println("adminInitiateAuth challenge name "+initialResponse.getChallengeName());
-
-					//  Map<String,String> challengeResponses = new HashMap<String,String>();
-					//  challengeResponses.put("USERNAME", user.getEmail());
-					//  challengeResponses.put("PASSWORD", user.getPassword());
-					//  challengeResponses.put("NEW_PASSWORD", user.getPassword());
- 
-					//  AdminRespondToAuthChallengeRequest finalRequest = new AdminRespondToAuthChallengeRequest()
-					//  .withChallengeName(ChallengeNameType.NEW_PASSWORD_REQUIRED)
-					//  .withChallengeResponses(challengeResponses)
-					//  .withClientId(getClientId())
-					//  .withUserPoolId(getUserPoolId())
-					//  .withSession(initialResponse.getSession());
- 
-
-					//  AdminRespondToAuthChallengeResult challengeResponse = cognitoClient.adminRespondToAuthChallenge(finalRequest);
-					//  System.out.println("Challenge Response "+challengeResponse.getAuthenticationResult().getAccessToken());
- 
-					//  cognitoClient.shutdown();
-					//  resultMap.put("statusCode", 200);		
-
-					// }catch(Exception e){
-					// e.printStackTrace();
-					// System.out.println(e.getMessage());
-			//}	
 			cognitoClient.shutdown();
-			resultMap.put("statusCode", 200);	
+			resultMap.put("statusCode", 200);
+			resultMap.put("body", "{" +
+					"    \"statusCode\": 200," +
+					"    \"message\": \"User successfully signedup\"" +
+					"}");
+					
 		}
 		else if(rawPath.contains("signin")) { // POST
 			
@@ -196,68 +174,93 @@ public class ApiHandler implements RequestHandler<Object, Map<String, Object>> {
 			System.out.println(user.toString());
 
 			AdminInitiateAuthResult response = initiateAuth(cognitoClient,getClientId(),user.getEmail(), user.getPassword(),getUserPoolId());
+
 			resultMap.put("statusCode", 200);
-			resultMap.put("accessToken",response.getAuthenticationResult().getAccessToken());
+			resultMap.put("body", "{" +
+					"    \"statusCode\": 200," +
+				"    \"message\":\""+response.getAuthenticationResult().getIdToken()+"\"}");
+					
 			cognitoClient.shutdown();
 		} 
 		else if(rawPath.contains("tables")) { //GET
-			System.out.println("resource name: "+rawPath);
-			if(resultMap.get("httpMethod").equals("GET")) {
-				// Headers:
-				// Authorization: Bearer $accessToken
-				// Request: {}
-				// return Response:
-				// 	{
-				// 		"tables": [
-				// 			{
-				// 				"id": // int
-				// 				"number": // int, number of the table
-				// 				"places": // int, amount of people to sit at the table
-				// 				"isVip": // boolean, is the table in the VIP hall
-				// 				"minOrder": // optional. int, table deposit required to book it
-				// 			},
-				// 			...
-				// 		]
-				// 	}
+			System.out.println("resource name: "+rawPath+" http method "+reqObj.get("httpMethod").toString());
+			if(reqObj.get("httpMethod").toString().equals("GET")) {
+				if(reqObj.get("pathParameters")!=null){
+					System.out.println("in get path param "+reqObj.get("pathParameters"));
+					Map<String, Double> jsonJavaRootObject = gson.fromJson(reqObj.get("pathParameters").toString(), Map.class);
+					System.out.println(Double.valueOf(jsonJavaRootObject.get("tableId")).intValue());
+					int tableId = Double.valueOf(jsonJavaRootObject.get("tableId")).intValue();
+					System.out.println("table id "+tableId);
+					if(tableId!=0){
+							Table table = DYNAMO_DB.getTable(TABLE_TABLE);
+							Item tableItem = table.getItem("id",tableId);
+							resultMap.put("statusCode", 200);					
+							resultMap.put("body", "{" +
+							"    \"statusCode\": 200," +
+						"    \"message\":\""+gson.toJson(tableItem.asMap())+"\"}");		
+					}
+					else{
+							resultMap.put("statusCode", 400);
+							resultMap.put("body", "{" +
+							"    \"statusCode\": 400," +
+						"    \"message\":\"Bad Request\"}");		
+					}
+				}
+				else{
+					Table table = DYNAMO_DB.getTable(TABLE_TABLE);
+					table.scan(rawPath, null, reqObj);
+					AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard().withRegion(REGION).build();
+					ScanRequest scanRequest = new ScanRequest()
+						.withTableName("Reply");
 
-				// if any get parameter then /table/{tableId} 
-				// Headers:
-				// Authorization: Bearer $accessToken
-				// Request: {}
-				// return Response:
-				// {
-				// "id": // int
-				// "number": // int, number of the table
-				// "places": // int, amount of people to sit at the table
-				// "isVip": // boolean, is the table in the VIP hall
-				// "minOrder": // optional. int, table deposit required to book it
-				// }
+					ScanResult result = client.scan(scanRequest);
+					 for (Map<String, AttributeValue> item : result.getItems()){
+						System.out.println(item.values());
+					}
+					result.getItems().listIterator();
+					resultMap.put("statusCode", 200);					
+					resultMap.put("body", "{" +
+					"    \"statusCode\": 200," +
+				"    \"message\":\""+gson.toJson(result.getItems())+"\"}");
 
-			} else if(resultMap.get("httpMethod").equals("POST")) {
-				// Headers:
-				// Authorization: Bearer $accessToken
-				// POST data in Request:
-				// 	{
-				// 		"id": // int
-				// 		"number": // int, number of the table
-				// 		"places": // int, amount of people to sit at the table
-				// 		"isVip": // boolean, is the table in the VIP hall
-				// 		"minOrder": // optional. int, table deposit required to book it
-				// 	}
+				}
+			} else if(reqObj.get("httpMethod").toString().equals("POST")) {
 
-				// process data logic 
-				// return below response 
-				// {
-				// "id": $table_id // int, id of the created table
-				// }
+				JsonReader reader = new JsonReader(new StringReader(reqObj.get("body").toString()));
+				reader.setLenient(true);
+				TableData tableObj = gson.fromJson(reader, TableData.class);
+
+				if(tableObj.getId()!=0 && tableObj.getPlaces()!=0 && tableObj.getNumber()!=0){
+						Table table = DYNAMO_DB.getTable(TABLE_TABLE);
+						table.putItem(new Item()
+								.withInt("id", tableObj.getId())
+								.withInt("number", tableObj.getNumber())
+								.withInt("places", tableObj.getPlaces())
+								.withInt("minOrder", tableObj.getMinOrder()));
+
+						Item item = table.getItem("id", tableObj.getId());
+
+						System.out.println("inserted record "+item);
+						System.out.println(item.get("id")); 
+
+						resultMap.put("statusCode", 200);
+						resultMap.put("body", "{" +
+						"    \"statusCode\": 200," +
+					"    \"message\":\""+item.get("id")+"\"}");		
+				}
+				else{
+						resultMap.put("statusCode", 400);
+						resultMap.put("body", "{" +
+						"    \"statusCode\": 400," +
+					"    \"message\":\"Bad Request\"}");		
+				}
 			}
 
-			resultMap.put("statusCode", 200);
-	
+
 		}
 		else if(rawPath.contains("reservations")) {
 			System.out.println("resource name: "+rawPath);
-			if(resultMap.get("httpMethod").equals("POST")) {
+			if(reqObj.get("httpMethod").equals("POST")) {
 				// Headers:
 				// Authorization: Bearer $accessToken
 				// Request:
@@ -273,7 +276,7 @@ public class ApiHandler implements RequestHandler<Object, Map<String, Object>> {
 				// {
 				// "reservationId": // string uuidv4
 				// }
-			} else if(resultMap.get("httpMethod").equals("GET")) {
+			} else if(reqObj.get("httpMethod").equals("GET")) {
 				// Headers:
 				// Authorization: Bearer $accessToken
 				// Request: {}
@@ -291,10 +294,8 @@ public class ApiHandler implements RequestHandler<Object, Map<String, Object>> {
 				// ]
 				// }
 			}
-			resultMap.put("statusCode", 200);
 		}
 		return resultMap;
-
 	}
 
 	  public static void signUp(AWSCognitoIdentityProvider identityProviderClient, 
@@ -314,16 +315,13 @@ public class ApiHandler implements RequestHandler<Object, Map<String, Object>> {
         List<AttributeType> userAttrsList = new ArrayList<>();
         userAttrsList.add(userAttrs);
         try {
-            SignUpRequest signUpRequest = new SignUpRequest()
+	            SignUpRequest signUpRequest = new SignUpRequest()
                     .withUserAttributes(userAttrsList)
                     .withUsername(email)
                     .withClientId(clientId)
-                    .withPassword(password)
-                    ;
-
-            SignUpResult resp = identityProviderClient.signUp(signUpRequest);
-            System.out.println("User has been signed up ");
-
+                    .withPassword(password);
+				identityProviderClient.signUp(signUpRequest);
+	            System.out.println("User has been signed up ");
         } catch(Exception e) {
             System.err.println(e.getMessage());
         }
@@ -386,21 +384,4 @@ public class ApiHandler implements RequestHandler<Object, Map<String, Object>> {
 			return null;
 		}
 
-	// public static void confirmSignUp(CognitoIdentityProviderClient identityProviderClient, String clientId, String code,
-    //         String userName) {
-	// 			try {
-	// 			ConfirmSignUpRequest signUpRequest = ConfirmSignUpRequest.builder()
-	// 					.clientId(clientId)
-	// 					.confirmationCode(code)
-	// 					.username(userName)
-	// 					.build();
-
-	// 			identityProviderClient.confirmSignUp(signUpRequest);
-	// 			System.out.println(userName + " was confirmed");
-
-	// 		} catch (CognitoIdentityProviderException e) {
-	// 			System.err.println(e.awsErrorDetails().errorMessage());
-	// 			System.exit(1);
-	// 		}
-	// 	}
 }
