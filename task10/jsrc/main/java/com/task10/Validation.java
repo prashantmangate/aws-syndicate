@@ -19,19 +19,18 @@ public class Validation {
     private static final String TABLE_TABLE = System.getenv("tables_table");
 	private static final String TABLE_RESERVATION = System.getenv("reservations_table");
 	private static AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard().withRegion(REGION).build();
-    private static final DynamoDB DYNAMO_DB = new DynamoDB(AmazonDynamoDBAsyncClientBuilder.standard().withRegion(REGION).build());
+    //private static final DynamoDB DYNAMO_DB = new DynamoDB(AmazonDynamoDBAsyncClientBuilder.standard().withRegion(REGION).build());
 	
-    public static int checkTableExist(int tableNumber){ 
-        int tableNum = 0;
+    public static boolean checkTableExist(int tableNumber){ 
         try{
-            Table table =  DYNAMO_DB.getTable(TABLE_TABLE);       
-            Item item = table.getItem("number", tableNumber);
-            System.out.println(item.get("number")); 
-            tableNum = item.getInt("number"); 
-            return tableNum;
+            ScanRequest scanRequest = new ScanRequest().withTableName(TABLE_TABLE);
+            ScanResult result = client.scan(scanRequest).withItems(Map.of(":tableNumber", new AttributeValue().withN(String.valueOf(tableNumber)),
+                                                        ":tableNumber", new AttributeValue().withN(String.valueOf(tableNumber))));
+            System.out.println("table number record exist "+result.getItems().isEmpty());  
+            return  (result.getItems().isEmpty()) ? false: true;
         }catch(Exception e){
-            System.out.println(e.getMessage()+" table number "+tableNum);
-            return tableNum;
+            System.out.println(e.getMessage());
+            return false;
         }
     }
 

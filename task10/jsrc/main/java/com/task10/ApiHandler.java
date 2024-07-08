@@ -191,11 +191,20 @@ public class ApiHandler implements RequestHandler<Object, Map<String, Object>> {
 					System.out.println(Double.valueOf(jsonJavaRootObject.get("tableId")).intValue());
 					int tableId = Double.valueOf(jsonJavaRootObject.get("tableId")).intValue();
 					System.out.println("table id "+tableId);
+					StringBuffer buff = new StringBuffer();
 					if(tableId!=0){
 							Table table = DYNAMO_DB.getTable(TABLE_TABLE);
 							Item tableItem = table.getItem("id",tableId);
 							resultMap.put("statusCode", 200);					
-							resultMap.put("body", "{\""+tableItem.toJSON()+"\"}");		
+							buff.append("{");
+							buff.append("\"id\":"+tableItem.get("id"));buff.append(",");
+							buff.append("\"number\":"+tableItem.get("number"));buff.append(",");
+							buff.append("\"places\":"+tableItem.get("places"));buff.append(",");
+							buff.append("\"isVip\":"+tableItem.get("isVip"));buff.append(",");
+							buff.append("\"minOrder\":"+tableItem.get("minOrder"));
+							buff.append("}");
+							resultMap.put("body", buff.toString());		
+							
 						}
 					else{
 							resultMap.put("statusCode", 400);
@@ -214,7 +223,7 @@ public class ApiHandler implements RequestHandler<Object, Map<String, Object>> {
 
 					ScanResult result = client.scan(TABLE_TABLE, ls);
 					List<TableData> tList = new ArrayList<>();
-					//StringBuffer buff = new StringBuffer();
+
 					for(Map<String, AttributeValue> i : result.getItems()){	
 						TableData t = new TableData();
 						t.setId(Integer.parseInt(i.get("id").getN()));
@@ -224,13 +233,6 @@ public class ApiHandler implements RequestHandler<Object, Map<String, Object>> {
 						t.setMinOrder(Integer.parseInt(i.get("minOrder").getN()));
 						tList.add(t);
 					}
-					// buff.append("{");
-					// buff.append("id:"+Integer.parseInt(i.get("id").getN()));buff.append(",")
-					// buff.append("number:"+Integer.parseInt(i.get("number").getN()));buff.append(",")
-					// buff.append("places:"+Integer.parseInt(i.get("places").getN()));buff.append(",")
-					// buff.append("isVip:"+i.get("isVip").getBOOL());buff.append(",");
-					// buff.append("minOrder:"+Integer.parseInt(i.get("minOrder").getN()));
-					// buff.append("}");
 					System.out.println(tList);
 					resultMap.put("statusCode", 200);					
 					resultMap.put("body", "{" +
@@ -277,12 +279,12 @@ public class ApiHandler implements RequestHandler<Object, Map<String, Object>> {
 				reader.setLenient(true);
 				Reservation reservationObj = gson.fromJson(reader, Reservation.class);
 				
-				if(Validation.checkTableExist(reservationObj.getTableNumber())!=0 
+				if(Validation.checkTableExist(reservationObj.getTableNumber()) 
 					&& Validation.isReservationFreeOfOverlapping(reservationObj.getTableNumber(), 
 					reservationObj.getDate(), 
 					reservationObj.getSlotTimeStart(),
 					reservationObj.getSlotTimeEnd()) 
-					&& reservationObj.getClientName()!=""){
+					&& !reservationObj.getClientName().equals("")){
 						String id = java.util.UUID.randomUUID().toString();
 						Table table = DYNAMO_DB.getTable(TABLE_RESERVATION);
 						table.putItem(new Item()
@@ -299,10 +301,7 @@ public class ApiHandler implements RequestHandler<Object, Map<String, Object>> {
 					"    \"reservationId\":\""+id+"\"}");		
 				}
 				else{
-						resultMap.put("statusCode", 400);
-						resultMap.put("body", "{" +
-						"    \"statusCode\": 400," +
-					"    \"message\":\"Bad Request\"}");		
+						resultMap.put("statusCode", 400);		
 				}
 			} else if(reqObj.get("httpMethod").equals("GET")) {
 				AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard().withRegion(REGION).build();
