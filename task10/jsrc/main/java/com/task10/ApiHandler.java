@@ -7,6 +7,10 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
+
+import org.apache.commons.validator.routines.EmailValidator;
+
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.cognitoidp.AWSCognitoIdentityProvider;
 import com.amazonaws.services.cognitoidp.AWSCognitoIdentityProviderClientBuilder;
@@ -80,47 +84,54 @@ public class ApiHandler implements RequestHandler<Object, Map<String, Object>> {
 		if(rawPath.contains("/signup")) {// POST
 
 			System.out.println("resource name: "+rawPath);
-			
+					
 			System.out.println(reqObj.get("body").toString());
 			System.out.println("System Env user pool "+USER_POOL);	
 			JsonReader reader = new JsonReader(new StringReader(reqObj.get("body").toString()));
 			reader.setLenient(true);
 			User user = gson.fromJson(reader, User.class);
 			System.out.println("before signup "+user.toString());
-			signUp(cognitoClient,  
-					getClientId(), 
-					user.getFirstName(), 
-					user.getLastName(), 
-					user.getEmail(), 
-					user.getPassword());
 
-			// Confirm Signup	
-            AdminConfirmSignUpRequest userRequest = new AdminConfirmSignUpRequest()
-					.withUsername(user.getEmail())
-                    .withUserPoolId(getUserPoolId());           
+			boolean valid = EmailValidator.getInstance().isValid(user.getEmail());
+			String regx = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[$%^*]).{12,}$";
+			Pattern pattern = Pattern.compile(regx);
 
-            AdminConfirmSignUpResult response = cognitoClient.adminConfirmSignUp(userRequest);
-			AttributeType userAttrs = new AttributeType()
-			.withName("email")
-			.withValue(user.getEmail())
-			.withName("email_verified")
-			.withValue("true")
-			;
+			if(valid && pattern.matcher( user.getPassword()).matches())
+			{
 
-			AdminUpdateUserAttributesRequest reqAttr = new AdminUpdateUserAttributesRequest()
-			.withUserAttributes(userAttrs)
-			.withUserPoolId(getUserPoolId())
-			.withUsername(user.getEmail());
-			cognitoClient.adminUpdateUserAttributes(reqAttr);
-			System.out.println("user confirmed"+response.getSdkResponseMetadata());
+					signUp(cognitoClient,  
+							getClientId(), 
+							user.getFirstName(), 
+							user.getLastName(), 
+							user.getEmail(), 
+							user.getPassword());
 
-			cognitoClient.shutdown();
-			resultMap.put("statusCode", 200);
-			resultMap.put("body", "{" +
-					"    \"statusCode\": 200," +
-					"    \"message\": \"User successfully signedup\"" +
-					"}");
-					
+					// Confirm Signup	
+					AdminConfirmSignUpRequest userRequest = new AdminConfirmSignUpRequest()
+							.withUsername(user.getEmail())
+							.withUserPoolId(getUserPoolId());           
+
+					AdminConfirmSignUpResult response = cognitoClient.adminConfirmSignUp(userRequest);
+					AttributeType userAttrs = new AttributeType()
+					.withName("email")
+					.withValue(user.getEmail())
+					.withName("email_verified")
+					.withValue("true")
+					;
+
+					AdminUpdateUserAttributesRequest reqAttr = new AdminUpdateUserAttributesRequest()
+					.withUserAttributes(userAttrs)
+					.withUserPoolId(getUserPoolId())
+					.withUsername(user.getEmail());
+					cognitoClient.adminUpdateUserAttributes(reqAttr);
+					System.out.println("user confirmed"+response.getSdkResponseMetadata());
+
+					cognitoClient.shutdown();
+					resultMap.put("statusCode", 200);
+			}
+			else{
+					resultMap.put("statusCode", 400);
+			}
 		}
 		else if(rawPath.contains("signin")) { // POST
 			
@@ -130,14 +141,27 @@ public class ApiHandler implements RequestHandler<Object, Map<String, Object>> {
 			User user = gson.fromJson(reader, User.class);
 			System.out.println(user.toString());
 
-			AdminInitiateAuthResult response = initiateAuth(cognitoClient,getClientId(),user.getEmail(), user.getPassword(),getUserPoolId());
+			try{
+				boolean valid = EmailValidator.getInstance().isValid(user.getEmail());
+				String regx = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[$%^*]).{12,}$";
+				Pattern pattern = Pattern.compile(regx);
 
-			resultMap.put("statusCode", 200);
-			resultMap.put("body", "{" +
-					"    \"statusCode\": 200," +
-				"    \"message\":\""+response.getAuthenticationResult().getIdToken()+"\"}");
-					
-			cognitoClient.shutdown();
+				if(valid && pattern.matcher( user.getPassword()).matches())
+				{
+					AdminInitiateAuthResult response = initiateAuth(cognitoClient,getClientId(),user.getEmail(), user.getPassword(),getUserPoolId());
+					resultMap.put("statusCode", 200);
+					resultMap.put("body", "{" +
+							"    \"statusCode\": 200," +
+						"    \"message\":\""+response.getAuthenticationResult().getIdToken()+"\"}");					
+					cognitoClient.shutdown();
+				}else{
+					resultMap.put("statusCode", 400);
+				}
+
+			}catch(Exception e) {
+
+			}
+
 		} 
 		else if(rawPath.contains("tables")) { //GET
 			System.out.println("resource name: "+rawPath+" http method "+reqObj.get("httpMethod").toString());

@@ -3,6 +3,10 @@ package com.task10;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
+
+import org.apache.commons.validator.routines.EmailValidator;
+
 import com.google.gson.Gson;
 
 public class JsonTest {
@@ -37,5 +41,21 @@ public class JsonTest {
 
  //       System.out.println(rL);
        System.out.println(gson.toJson(rL));
+
+       boolean valid = EmailValidator.getInstance().isValid("asdasd.asd@asd.com");
+       if(valid)
+            System.out.println("valid email");
+       else    
+            System.out.println("invalid email");
+
+        String regx = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[$%^*]).{12,}$";
+
+        Pattern pattern = Pattern.compile(regx);
+        if (!pattern.matcher("adsAd122$Qwe").matches()) {
+           System.out.println("Invalid password");
+        }
+        else{
+            System.out.println("valid password");
+        }
     }
 }
