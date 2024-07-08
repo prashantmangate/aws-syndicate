@@ -158,7 +158,7 @@ public class ApiHandler implements RequestHandler<Object, Map<String, Object>> {
 			String regx = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[$%^*-_]).{12,}$";
 			Pattern pattern = Pattern.compile(regx);
 
-			if(valid && pattern.matcher("p12345T-048_Gru").matches())
+			if(valid && pattern.matcher(user.getPassword()).matches())
 			{
 				try{
 						AdminInitiateAuthResult response = initiateAuth(cognitoClient,getClientId(),user.getEmail(), user.getPassword(),getUserPoolId());
@@ -195,14 +195,11 @@ public class ApiHandler implements RequestHandler<Object, Map<String, Object>> {
 							Table table = DYNAMO_DB.getTable(TABLE_TABLE);
 							Item tableItem = table.getItem("id",tableId);
 							resultMap.put("statusCode", 200);					
-							resultMap.put("body", "{" +
-							"    \"statusCode\": 200," +
-						"    \"message\":\""+gson.toJson(tableItem.asMap())+"\"}");		
-					}
+							resultMap.put("body", "{\""+gson.toJson(tableItem.asMap())+"\"}");		
+						}
 					else{
 							resultMap.put("statusCode", 400);
 							resultMap.put("body", "{" +
-							"    \"statusCode\": 400," +
 						"    \"message\":\"Bad Request\"}");		
 					}
 				}
@@ -239,8 +236,7 @@ public class ApiHandler implements RequestHandler<Object, Map<String, Object>> {
 					// result.getItems().listIterator();
 					resultMap.put("statusCode", 200);					
 					resultMap.put("body", "{" +
-					"    \"statusCode\": 200," +
-				"    \"message\":\""+gson.toJson(tList)+"\"}");
+				"    \"tables\":"+gson.toJson(tList)+"}");
 
 				}
 			} else if(reqObj.get("httpMethod").toString().equals("POST")) {
@@ -270,7 +266,6 @@ public class ApiHandler implements RequestHandler<Object, Map<String, Object>> {
 				else{
 						resultMap.put("statusCode", 400);
 						resultMap.put("body", "{" +
-						"    \"statusCode\": 400," +
 					"    \"message\":\"Bad Request\"}");		
 				}
 			}
@@ -297,8 +292,7 @@ public class ApiHandler implements RequestHandler<Object, Map<String, Object>> {
 
 						resultMap.put("statusCode", 200);
 						resultMap.put("body", "{" +
-						"    \"statusCode\": 200," +
-					"    \"message\":\""+id+"\"}");		
+					"    \"reservationId\":\""+id+"\"}");		
 				}
 				else{
 						resultMap.put("statusCode", 400);
