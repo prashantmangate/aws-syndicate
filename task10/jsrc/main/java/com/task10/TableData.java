@@ -10,8 +10,8 @@ class TableData{
     private int id;
     private int number;
     private int places;
-    private boolean isVip;
-    private int minOrder;
+    private boolean isVip = false;
+    private int minOrder = 0;
 
     @DynamoDBHashKey(attributeName = "id")
     public int getId() {
