@@ -67,10 +67,5 @@ public class Validation {
             LocalTime endInterval1 = LocalTime.parse(end1);
             return startInterval0.isBefore(endInterval1) && startInterval1.isBefore(endInterval0);
         }
-12 14
-13 15
-
-12 isbefore 15 - true
-13 isbefore 14 - true 
 
 }
