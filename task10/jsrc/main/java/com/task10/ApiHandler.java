@@ -92,12 +92,12 @@ public class ApiHandler implements RequestHandler<Object, Map<String, Object>> {
 			User user = gson.fromJson(reader, User.class);
 			System.out.println("before signup "+user.toString());
 
-			boolean valid = EmailValidator.getInstance().isValid(user.getEmail());
-			String regx = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[$%^*]).{12,}$";
-			Pattern pattern = Pattern.compile(regx);
+	//		boolean valid = EmailValidator.getInstance().isValid(user.getEmail());
+//			String regx = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[$%^*]).{12,}$";
+//			Pattern pattern = Pattern.compile(regx);
 
-			if(valid && pattern.matcher( user.getPassword()).matches())
-			{
+			//if(valid && pattern.matcher( user.getPassword()).matches())
+			//{
 
 					signUp(cognitoClient,  
 							getClientId(), 
@@ -128,10 +128,10 @@ public class ApiHandler implements RequestHandler<Object, Map<String, Object>> {
 
 					cognitoClient.shutdown();
 					resultMap.put("statusCode", 200);
-			}
-			else{
-					resultMap.put("statusCode", 400);
-			}
+			//}
+			//else{
+		//			resultMap.put("statusCode", 400);
+	//		}
 		}
 		else if(rawPath.contains("signin")) { // POST
 			
