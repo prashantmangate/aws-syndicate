@@ -40,7 +40,7 @@ public class Validation {
     }
 
     public static Boolean isReservationFreeOfOverlapping(int tableNumber,String date, String slotTimeStart, String slotTimeEnd) {
-            System.out.println("isReservationFreeOfOverlapping date=" + date + " slotTimeStart=" + slotTimeStart + " slotTimeEnd=" + slotTimeEnd);
+            System.out.println("isReservationFreeOfOverlapping : tableNumber="+tableNumber+" date=" + date + " slotTimeStart=" + slotTimeStart + " slotTimeEnd=" + slotTimeEnd);
                     List<String> ls = new ArrayList<>();
 					ls.add("tableNumber");
 					ls.add("date");
@@ -65,7 +65,7 @@ public class Validation {
 
             for (Map<String, AttributeValue> item : result.getItems()) {
                 System.out.println("reservation item "+item);    
-                if(item.get("slotTimeStart")!=null && item.get("slotTimeEnd")!=null){          
+                if(item.get("slotTimeStart")!=null && item.get("slotTimeEnd")!=null && Integer.parseInt(item.get("slotTimeStart").getN())==tableNumber){          
                     String itemSlotTimeStart = item.get("slotTimeStart").getS();
                     String itemSlotTimeEnd = item.get("slotTimeEnd").getS();
                     //modify to check time overlapse
