@@ -155,10 +155,10 @@ public class ApiHandler implements RequestHandler<Object, Map<String, Object>> {
 			System.out.println(user.toString());
 
 			boolean valid = EmailValidator.getInstance().isValid(user.getEmail());
-			//String regx = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[$%^*]).{12,}$";
-			//Pattern pattern = Pattern.compile(regx);
+			String regx = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[$%^*-_]).{12,}$";
+			Pattern pattern = Pattern.compile(regx);
 
-			if(valid)
+			if(valid && pattern.matcher("p12345T-048_Gru").matches())
 			{
 				try{
 						AdminInitiateAuthResult response = initiateAuth(cognitoClient,getClientId(),user.getEmail(), user.getPassword(),getUserPoolId());
