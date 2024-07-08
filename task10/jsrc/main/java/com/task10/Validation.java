@@ -24,8 +24,7 @@ public class Validation {
     public static boolean checkTableExist(int tableNumber){ 
         try{
             ScanRequest scanRequest = new ScanRequest().withTableName(TABLE_TABLE);
-            ScanResult result = client.scan(scanRequest).withItems(Map.of(":tableNumber", new AttributeValue().withN(String.valueOf(tableNumber)),
-                                                        ":tableNumber", new AttributeValue().withN(String.valueOf(tableNumber))));
+            ScanResult result = client.scan(scanRequest).withItems(Map.of(":tableNumber", new AttributeValue().withN(String.valueOf(tableNumber))));
             System.out.println("table number record exist "+result.getItems().isEmpty());  
             return  (result.getItems().isEmpty()) ? false: true;
         }catch(Exception e){
