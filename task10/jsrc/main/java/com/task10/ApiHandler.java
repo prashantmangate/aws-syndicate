@@ -160,12 +160,17 @@ public class ApiHandler implements RequestHandler<Object, Map<String, Object>> {
 
 			if(valid)
 			{
-				AdminInitiateAuthResult response = initiateAuth(cognitoClient,getClientId(),user.getEmail(), user.getPassword(),getUserPoolId());
-				resultMap.put("statusCode", 200);
-				resultMap.put("body", "{" +
-						"    \"statusCode\": 200," +
-					"    \"message\":\""+response.getAuthenticationResult().getIdToken()+"\"}");					
-				cognitoClient.shutdown();
+				try{
+						AdminInitiateAuthResult response = initiateAuth(cognitoClient,getClientId(),user.getEmail(), user.getPassword(),getUserPoolId());
+						resultMap.put("statusCode", 200);
+						resultMap.put("body", "{" +
+								"    \"statusCode\": 200," +
+							"    \"accessToken\":\""+response.getAuthenticationResult().getIdToken()+"\"}");					
+						cognitoClient.shutdown();
+				}catch(Exception e){
+					resultMap.put("statusCode", 400);
+				}
+
 			}else{
 				resultMap.put("statusCode", 400);
 			}
