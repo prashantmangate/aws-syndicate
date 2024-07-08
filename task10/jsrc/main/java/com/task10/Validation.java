@@ -25,9 +25,9 @@ public class Validation {
         int tableNum = 0;
         try{
             Table table =  DYNAMO_DB.getTable(TABLE_TABLE);       
-            Item item = table.getItem("id", tableNumber);
-            System.out.println(item.get("id")); 
-            tableNum = item.getInt("id"); 
+            Item item = table.getItem("number", tableNumber);
+            System.out.println(item.get("number")); 
+            tableNum = item.getInt("number"); 
             return tableNum;
         }catch(Exception e){
             System.out.println(e.getMessage()+" table number "+tableNum);
@@ -38,6 +38,7 @@ public class Validation {
     public static Boolean isReservationFreeOfOverlapping(Integer tableNumber,String date, String slotTimeStart, String slotTimeEnd) {
             System.out.println("isReservationFreeOfOverlapping date=" + date + " slotTimeStart=" + slotTimeStart + " slotTimeEnd=" + slotTimeEnd);
             ScanRequest scanRequest = new ScanRequest().withTableName(TABLE_RESERVATION);
+            @SuppressWarnings("unchecked")
             ScanResult result = client.scan(scanRequest).withItems(Map.of(":date", new AttributeValue().withS(date),
                                                         ":tableNumber", new AttributeValue().withN(tableNumber.toString())));
             if (result.getItems().isEmpty()) {
@@ -66,4 +67,10 @@ public class Validation {
             LocalTime endInterval1 = LocalTime.parse(end1);
             return startInterval0.isBefore(endInterval1) && startInterval1.isBefore(endInterval0);
         }
+12 14
+13 15
+
+12 isbefore 15 - true
+13 isbefore 14 - true 
+
 }
