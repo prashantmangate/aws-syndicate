@@ -128,9 +128,11 @@ public class ApiHandler implements RequestHandler<Object, Map<String, Object>> {
 
 					cognitoClient.shutdown();
 					resultMap.put("statusCode", 200);
+					System.out.println("valid data"+user.toString());
 			}
 			else{
-					resultMap.put("statusCode", 400);
+				System.out.println("Invalid data"+user.toString());
+				resultMap.put("statusCode", 400);
 			}
 		}
 		else if(rawPath.contains("signin")) { // POST
