@@ -245,7 +245,7 @@ public class ApiHandler implements RequestHandler<Object, Map<String, Object>> {
 						String id = java.util.UUID.randomUUID().toString();
 						Table table = DYNAMO_DB.getTable(TABLE_RESERVATION);
 						table.putItem(new Item()
-						.withPrimaryKey("reservationId",id)
+						.withPrimaryKey("id",id)
 								.withInt("tableNumber", reservationObj.getTableNumber())
 								.withString("clientName", reservationObj.getClientName())
 								.withString("phoneNumber", reservationObj.getPhoneNumber())
