@@ -279,12 +279,27 @@ public class ApiHandler implements RequestHandler<Object, Map<String, Object>> {
 				reader.setLenient(true);
 				Reservation reservationObj = gson.fromJson(reader, Reservation.class);
 				
-				if(Validation.checkTableExist(reservationObj.getTableNumber()) 
-					&& Validation.isReservationFreeOfOverlapping(reservationObj.getTableNumber(), 
+				if(Validation.checkTableExist(reservationObj.getTableNumber())  
+					&& !reservationObj.getClientName().equals("")){
+						
+						String id = java.util.UUID.randomUUID().toString();
+						Table table = DYNAMO_DB.getTable(TABLE_RESERVATION);
+						table.putItem(new Item()
+						.withPrimaryKey("id",id)
+								.withInt("tableNumber", reservationObj.getTableNumber())
+								.withString("clientName", reservationObj.getClientName())
+								.withString("phoneNumber", reservationObj.getPhoneNumber())
+								.withString("date", reservationObj.getDate())
+								.withString("slotTimeStart", reservationObj.getSlotTimeStart())
+								.withString("slotTimeEnd", reservationObj.getSlotTimeEnd()));
+
+						resultMap.put("statusCode", 200);
+						resultMap.put("body", "{" +
+					"    \"reservationId\":\""+id+"\"}");		
+				}else if(Validation.isReservationFreeOfOverlapping(reservationObj.getTableNumber(), 
 					reservationObj.getDate(), 
 					reservationObj.getSlotTimeStart(),
-					reservationObj.getSlotTimeEnd()) 
-					&& !reservationObj.getClientName().equals("")){
+					reservationObj.getSlotTimeEnd())){
 						String id = java.util.UUID.randomUUID().toString();
 						Table table = DYNAMO_DB.getTable(TABLE_RESERVATION);
 						table.putItem(new Item()

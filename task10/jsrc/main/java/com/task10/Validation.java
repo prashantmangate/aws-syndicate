@@ -5,11 +5,7 @@ import java.util.Map;
 
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBAsyncClientBuilder;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
-import com.amazonaws.services.dynamodbv2.document.DynamoDB;
-import com.amazonaws.services.dynamodbv2.document.Item;
-import com.amazonaws.services.dynamodbv2.document.Table;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.ScanRequest;
 import com.amazonaws.services.dynamodbv2.model.ScanResult;
@@ -26,7 +22,7 @@ public class Validation {
             ScanRequest scanRequest = new ScanRequest().withTableName(TABLE_TABLE);
             ScanResult result = client.scan(scanRequest).withItems(Map.of(":tableNumber", new AttributeValue().withN(String.valueOf(tableNumber))));
             System.out.println("table number record exist "+result.getItems().isEmpty());  
-            return  (result.getItems().isEmpty()) ? false: true;
+            return  result.getItems().isEmpty();
         }catch(Exception e){
             System.out.println(e.getMessage());
             return false;
