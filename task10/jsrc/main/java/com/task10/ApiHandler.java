@@ -265,7 +265,7 @@ public class ApiHandler implements RequestHandler<Object, Map<String, Object>> {
 
 						resultMap.put("statusCode", 200);
 						resultMap.put("body", "{" +
-					"    \"id\":\""+item.get("id")+"\"}");		
+					"    \"id\":"+item.get("id")+"}");		
 				}
 				else{
 						resultMap.put("statusCode", 400);
