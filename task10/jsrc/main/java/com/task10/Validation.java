@@ -1,6 +1,8 @@
 package com.task10;
 
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import com.amazonaws.regions.Regions;
@@ -17,37 +19,61 @@ public class Validation {
 	private static AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard().withRegion(REGION).build();
     //private static final DynamoDB DYNAMO_DB = new DynamoDB(AmazonDynamoDBAsyncClientBuilder.standard().withRegion(REGION).build());
 	
-    public static boolean checkTableExist(int tableNumber){ 
+    public static boolean isTableNumberEmpty(int tableNumber){ 
         try{
+            System.out.println("table table name "+TABLE_TABLE);
+
             ScanRequest scanRequest = new ScanRequest().withTableName(TABLE_TABLE);
             ScanResult result = client.scan(scanRequest).withItems(Map.of(":tableNumber", new AttributeValue().withN(String.valueOf(tableNumber))));
-            System.out.println("table number record exist "+result.getItems().isEmpty());  
-            return  result.getItems().isEmpty();
+            System.out.println("Table record "+result.getItems());  
+            System.out.println("is table empty "+result.getItems().isEmpty());
+            System.out.println("is table count "+result.getCount());
+            
+            if(result.getCount()==0 || result.getItems().isEmpty())
+                return  true;
+            else
+                return false;
         }catch(Exception e){
             System.out.println(e.getMessage());
             return false;
         }
     }
 
-    public static Boolean isReservationFreeOfOverlapping(Integer tableNumber,String date, String slotTimeStart, String slotTimeEnd) {
+    public static Boolean isReservationFreeOfOverlapping(int tableNumber,String date, String slotTimeStart, String slotTimeEnd) {
             System.out.println("isReservationFreeOfOverlapping date=" + date + " slotTimeStart=" + slotTimeStart + " slotTimeEnd=" + slotTimeEnd);
-            ScanRequest scanRequest = new ScanRequest().withTableName(TABLE_RESERVATION);
-            @SuppressWarnings("unchecked")
-            ScanResult result = client.scan(scanRequest).withItems(Map.of(":date", new AttributeValue().withS(date),
-                                                        ":tableNumber", new AttributeValue().withN(tableNumber.toString())));
-            if (result.getItems().isEmpty()) {
+                    List<String> ls = new ArrayList<>();
+					ls.add("tableNumber");
+					ls.add("date");
+					ls.add("slotTimeStart");
+					ls.add("slotTimeEnd");
+
+
+             ScanResult result = client.scan(TABLE_RESERVATION, ls)
+            //ScanRequest scanRequest = new ScanRequest().withTableName(TABLE_RESERVATION);
+            //ScanResult result = client.scan(scanRequest)
+            .withItems(Map.of(":date", new AttributeValue().withS(date),":tableNumber", new AttributeValue().withN(String.valueOf(tableNumber))))
+            ;
+
+            System.out.println("reservation table name "+TABLE_RESERVATION);
+            System.out.println("reservation items "+result.getItems());
+            System.out.println("is reservation count "+result.getCount());
+            
+            if(result.getCount()==0 || result.getItems().isEmpty()) {
                 System.out.println("isReservationFreeOfOverlapping TRUE");
                 return true;
             }
 
             for (Map<String, AttributeValue> item : result.getItems()) {
-                String itemSlotTimeStart = item.get("slotTimeStart").getS();
-                String itemSlotTimeEnd = item.get("slotTimeEnd").getS();
-                //modify to check time overlapse
+                System.out.println("reservation item "+item);    
+                if(item.get("slotTimeStart")!=null && item.get("slotTimeEnd")!=null){          
+                    String itemSlotTimeStart = item.get("slotTimeStart").getS();
+                    String itemSlotTimeEnd = item.get("slotTimeEnd").getS();
+                    //modify to check time overlapse
 
-                if (isOverlapping(slotTimeStart, slotTimeEnd, itemSlotTimeStart, itemSlotTimeEnd)){
-                    System.out.println("isReservationFreeOfOverlapping FALSE");
-                    return false;
+                    if (isOverlapping(slotTimeStart, slotTimeEnd, itemSlotTimeStart, itemSlotTimeEnd)){
+                        System.out.println("isReservationFreeOfOverlapping FALSE");
+                        return false;
+                    }
                 }
             }
 
