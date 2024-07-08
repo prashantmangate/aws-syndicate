@@ -59,7 +59,7 @@ public class Validation {
             return true;
         }
 
-        public boolean isOverlapping(String start0, String end0, String start1, String end1) {
+        public static boolean isOverlapping(String start0, String end0, String start1, String end1) {
             LocalTime startInterval0 = LocalTime.parse(start0);
             LocalTime endInterval0 = LocalTime.parse(end0);
             LocalTime startInterval1 = LocalTime.parse(start1);
