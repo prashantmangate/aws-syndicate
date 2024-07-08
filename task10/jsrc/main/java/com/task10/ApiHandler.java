@@ -211,7 +211,7 @@ public class ApiHandler implements RequestHandler<Object, Map<String, Object>> {
 					table.scan(rawPath, null, reqObj);
 					AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard().withRegion(REGION).build();
 					ScanRequest scanRequest = new ScanRequest()
-						.withTableName("Reply");
+						.withTableName(TABLE_TABLE);
 
 					ScanResult result = client.scan(scanRequest);
 					 for (Map<String, AttributeValue> item : result.getItems()){
