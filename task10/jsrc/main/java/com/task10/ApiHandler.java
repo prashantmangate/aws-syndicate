@@ -334,7 +334,7 @@ public class ApiHandler implements RequestHandler<Object, Map<String, Object>> {
 	
 				resultMap.put("statusCode", 200);					
 				resultMap.put("body", "{" +
-			"    \"reservations\":\""+gson.toJson(rList)+"\"}");
+					"\"reservations\":"+gson.toJson(rList)+"}");
 			}
 		}
 		return resultMap;
