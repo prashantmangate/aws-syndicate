@@ -25,7 +25,7 @@ public class Validation {
             System.out.println("table table name "+TABLE_TABLE);
 
             ScanRequest scanRequest = new ScanRequest().withTableName(TABLE_TABLE);
-            ScanResult result = client.scan(scanRequest).withItems(Map.of(":tableNumber", new AttributeValue().withN(String.valueOf(tableNumber))));
+            ScanResult result = client.scan(scanRequest).withItems(Map.of(":number", new AttributeValue().withN(String.valueOf(tableNumber))));
             System.out.println("Table record "+result.getItems());  
             System.out.println("is table empty "+result.getItems().isEmpty());
             System.out.println("is table count "+result.getCount());
@@ -36,12 +36,13 @@ public class Validation {
             else{
                 for (Map<String, AttributeValue> item : result.getItems()) {
                     System.out.println("table records "+item);
-                    if(Integer.parseInt(item.get("tableNumber").getN())==tableNumber)
+                    if(item.get("number")!=null && Integer.parseInt(item.get("number").getN())==tableNumber)
                      {
                         tableEmpty = false;   
                      }  
                 }
             }
+            System.out.println("table records for tableNumber"+tableNumber+" tableEmpty flag"+tableEmpty);
             return tableEmpty;
         }catch(Exception e){
             System.out.println(e.getMessage());
