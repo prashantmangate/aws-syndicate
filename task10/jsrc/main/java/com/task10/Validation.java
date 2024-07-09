@@ -21,6 +21,7 @@ public class Validation {
 	
     public static boolean isTableNumberEmpty(int tableNumber){ 
         try{
+            boolean tableEmpty = true;
             System.out.println("table table name "+TABLE_TABLE);
 
             ScanRequest scanRequest = new ScanRequest().withTableName(TABLE_TABLE);
@@ -28,11 +29,20 @@ public class Validation {
             System.out.println("Table record "+result.getItems());  
             System.out.println("is table empty "+result.getItems().isEmpty());
             System.out.println("is table count "+result.getCount());
-            
-            if(result.getCount()==0 || result.getItems().isEmpty())
-                return  true;
-            else
-                return false;
+
+            if(result.getCount()==0 || result.getItems().isEmpty()){    
+                tableEmpty=  true;
+            }
+            else{
+                for (Map<String, AttributeValue> item : result.getItems()) {
+                    System.out.println("table records "+item);
+                    if(Integer.parseInt(item.get("tableNumber").getN())==tableNumber)
+                     {
+                        tableEmpty = false;   
+                     }  
+                }
+            }
+            return tableEmpty;
         }catch(Exception e){
             System.out.println(e.getMessage());
             return false;
