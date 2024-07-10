@@ -34,6 +34,16 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "400 Bad Request",
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -71,6 +81,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ReservationsPOSTResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "400 Bad Request",
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "schema": {
+                  "type": "string"
                 }
               }
             }
@@ -173,6 +193,16 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "400 Bad Request",
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -210,6 +240,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/TablePOSTResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "400 Bad Request",
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "schema": {
+                  "type": "string"
                 }
               }
             }
@@ -309,6 +349,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/SignInPOSTResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "400 Bad Request",
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "schema": {
+                  "type": "string"
                 }
               }
             }
@@ -416,6 +466,16 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "400 Bad Request",
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -513,6 +573,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/SignupPOSTResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "400 Bad Request",
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "schema": {
+                  "type": "string"
                 }
               }
             }
@@ -659,31 +729,27 @@
         "title": "Tables GET Response",
         "type": "object", 
         "properties": {
-          "Tables":[
-                    {
-                        "id":{
-                          "type": "integer",
-                          "example": 100
-                        },
-                        "number":{
-                            "type": "integer",
-                            "example": 10
-                        },
-                        "places":{
-                            "type": "integer",
-                            "example": 1
-                        },
-                        "minOrder":{
-                            "type": "integer",
-                            "example": 2
-                        },
-                        "isVip":{
-                            "type": "boolean",
-                            "example": true
-                        }
-                    }
-              ]      
-          }
+                  "id":{
+                    "type": "integer",
+                    "example": 100
+                  },
+                  "number":{
+                      "type": "integer",
+                      "example": 10
+                  },
+                  "places":{
+                      "type": "integer",
+                      "example": 1
+                  },
+                  "minOrder":{
+                      "type": "integer",
+                      "example": 2
+                  },
+                  "isVip":{
+                      "type": "boolean",
+                      "example": true
+                  }
+          }  
       },
       "ReservationsPOSTResponse":{
         "title": "Rservations POST Response",
@@ -723,34 +789,31 @@
         "title": "Reservations GET Response",
         "type": "object",
         "properties": {
-          "reservations": [ {
-                            "tableNumber":{
-                              "type": "integer",
-                              "example": 100
-                            },
-                            "clientName":{
-                                "type": "string",
-                                "example": "Test Client"
-                            },
-                            "phoneNumber":{
-                                "type": "string",
-                                "example": "9876543210"
-                            },
-                            "date":{
-                                "type": "string",
-                                "example": "2024-06-20, yyyy-MM-dd format"
-                            },
-                            "slotTimeStart":{
-                                "type": "string",
-                                "example": "13:00"
-                            },
-                            "slotTimeEnd":{
-                                "type": "string",
-                                "example": "16:00"
-                            }   
+                  "tableNumber":{
+                    "type": "integer",
+                    "example": 100
+                  },
+                  "clientName":{
+                      "type": "string",
+                      "example": "Test Client"
+                  },
+                  "phoneNumber":{
+                      "type": "string",
+                      "example": "9876543210"
+                  },
+                  "date":{
+                      "type": "string",
+                      "example": "2024-06-20, yyyy-MM-dd format"
+                  },
+                  "slotTimeStart":{
+                      "type": "string",
+                      "example": "13:00"
+                  },
+                  "slotTimeEnd":{
+                      "type": "string",
+                      "example": "16:00"
+                  }   
             }   
-          ]
-        }
       },
       "SignInPOSTResponse":{
         "title": "Singin POST Response",

@@ -87,7 +87,7 @@
     "global_indexes": [],
     "autoscaling": []
   },
-  "api-ui-hoster": {
+  "${ui_bucket}": {
     "resource_type": "s3_bucket",
     "acl": "public-read",
     "cors": [],
