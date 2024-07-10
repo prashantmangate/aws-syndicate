@@ -521,6 +521,21 @@
                 "schema": {
                   "type": "string"
                 }
+              },
+              "Access-Control-Allow-Methods": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Access-Control-Allow-Headers": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Accept-Version":{
+                "schema": {
+                  "type": "string"
+                }
               }
             }
           },
@@ -528,6 +543,21 @@
             "description":"Bad Request",
             "headers": {
               "Access-Control-Allow-Origin": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Access-Control-Allow-Methods": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Access-Control-Allow-Headers": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Accept-Version":{
                 "schema": {
                   "type": "string"
                 }
@@ -551,7 +581,11 @@
             "default": {
               "statusCode": "200",
               "responseParameters": {
-                "method.response.header.Access-Control-Allow-Origin": "*"
+                "method.response.header.Access-Control-Allow-Headers": "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
+                "method.response.header.Access-Control-Allow-Origin": "*",
+                "method.response.header.Access-Control-Allow-Methods": "*",
+                "method.response.header.Accept-Version": "*"
+            
               } 
             }
           },
@@ -623,7 +657,7 @@
         "type": "object",
         "properties": {
             "id":{
-              "type": "int",
+              "type": "integer",
               "example": 100
             }
           }
@@ -633,16 +667,16 @@
         "type": "object",
         "properties": {
              "id":{
-              "type": "int"
+              "type": "integer"
             },
             "number":{
-                "type": "int"
+                "type": "integer"
             },
             "places":{
-                "type": "int"
+                "type": "integer"
             },
             "minOrder":{
-                "type": "int"
+                "type": "integer"
             },
             "isVip":{
                 "type": "boolean"
@@ -654,19 +688,19 @@
         "type": "object",
         "properties": {
             "id":{
-              "type": "int",
+              "type": "integer",
               "example": 100
             },
             "number":{
-                "type": "int",
+                "type": "integer",
                 "example": 10
             },
             "places":{
-                "type": "int",
+                "type": "integer",
                 "example": 1
             },
             "minOrder":{
-                "type": "int",
+                "type": "integer",
                 "example": 2
             },
             "isVip":{
@@ -682,19 +716,19 @@
           "Tables":[
                     {
                         "id":{
-                          "type": "int",
+                          "type": "integer",
                           "example": 100
                         },
                         "number":{
-                            "type": "int",
+                            "type": "integer",
                             "example": 10
                         },
                         "places":{
-                            "type": "int",
+                            "type": "integer",
                             "example": 1
                         },
                         "minOrder":{
-                            "type": "int",
+                            "type": "integer",
                             "example": 2
                         },
                         "isVip":{
@@ -720,7 +754,7 @@
         "type": "object",
          "properties": {
               "tableNumber":{
-                "type": "int"
+                "type": "integer"
               },
               "clientName":{
                   "type": "string"
@@ -745,7 +779,7 @@
         "properties": {
           "reservations": [ {
                             "tableNumber":{
-                              "type": "int",
+                              "type": "integer",
                               "example": 100
                             },
                             "clientName":{
