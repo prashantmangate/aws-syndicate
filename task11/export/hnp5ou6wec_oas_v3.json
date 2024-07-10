@@ -17,6 +17,8 @@
   "paths": {
     "/reservations": {
       "get": {
+        "summary":"Get Reservation",
+        "description":"This endpoint is used to get all reservations details.",
         "responses": {
           "200": {
             "description": "200 response",
@@ -67,6 +69,17 @@
         }
       },
       "post": {
+        "summary":"Add reservation",
+        "description":"This endpoint is used to add reservations details.",
+        "requestBody":{
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReservationsPOSTRequest"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "200 response",
@@ -92,15 +105,6 @@
                 "schema": {
                   "type": "string"
                 }
-              }
-            }
-          }
-        },
-        "requestBody":{
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ReservationsPOSTRequest"
               }
             }
           }
@@ -176,6 +180,8 @@
     },
     "/tables": {
       "get": {
+        "summary":"Get table",
+        "description":"This endpoint is used to get all tables details.",
         "responses": {
           "200": {
             "description": "200 response",
@@ -226,6 +232,17 @@
         }
       },
       "post": {
+        "summary":"Add table",
+        "description":"This endpoint is used to add table details.",
+        "requestBody":{
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TablePOSTRequest"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "200 response",
@@ -251,15 +268,6 @@
                 "schema": {
                   "type": "string"
                 }
-              }
-            }
-          }
-        },
-        "requestBody":{
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/TablePOSTRequest"
               }
             }
           }
@@ -335,6 +343,17 @@
     },
     "/signin": {
       "post": {
+        "summary":"Signin",
+        "description":"This endpoint is used to signin.",        
+        "requestBody":{
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignInPOSTRequest"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "200 response",
@@ -360,15 +379,6 @@
                 "schema": {
                   "type": "string"
                 }
-              }
-            }
-          }
-        },
-        "requestBody":{
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SignInPOSTRequest"
               }
             }
           }
@@ -439,6 +449,8 @@
     },
     "/tables/{tableId}": {
       "get": {
+        "summary":"Get specific table",
+        "description":"This endpoint is used to get specific table using table id.",        
         "parameters": [
           {
             "name": "tableId",
@@ -559,6 +571,17 @@
     },
     "/signup": {
       "post": {
+        "summary":"Signup User",
+        "description":"This endpoint is used to Signup.",       
+        "requestBody":{
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignupPOSTRequest"
+              }
+            }
+          }
+        }, 
         "responses": {
           "200": {
             "description": "200 response",
@@ -588,16 +611,7 @@
             }
           }
         },
-        "requestBody":{
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SignupPOSTRequest"
-              }
-            }
-          }
-        },
-        "x-amazon-apigateway-integration": {
+       "x-amazon-apigateway-integration": {
           "httpMethod": "POST",
           "uri": "arn:aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-central-1:196241772369:function:api_handler/invocations",
           "responses": {
