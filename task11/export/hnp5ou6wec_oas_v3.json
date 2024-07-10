@@ -1,7 +1,7 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "title": "Open API specification for reserve table app",
+    "title": "task11_api",
     "version": "2024-07-10T07:55:30Z"
   },
   "servers": [
