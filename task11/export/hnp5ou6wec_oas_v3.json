@@ -53,7 +53,7 @@
         ],
         "x-amazon-apigateway-integration": {
           "httpMethod": "POST",
-          "uri": "arn:aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-central-1:196241772369:function:cmtr-add4fd60-api_handler/invocations",
+          "uri": "arn:aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-central-1:196241772369:function:api_handler/invocations",
           "responses": {
             "default": {
               "statusCode": "200",
@@ -112,7 +112,7 @@
         ],
         "x-amazon-apigateway-integration": {
           "httpMethod": "POST",
-          "uri": "arn:aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-central-1:196241772369:function:cmtr-add4fd60-api_handler/invocations",
+          "uri": "arn:aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-central-1:196241772369:function:api_handler/invocations",
           "responses": {
             "default": {
               "statusCode": "200",
@@ -212,7 +212,7 @@
         ],
         "x-amazon-apigateway-integration": {
           "httpMethod": "POST",
-          "uri": "arn:aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-central-1:196241772369:function:cmtr-add4fd60-api_handler/invocations",
+          "uri": "arn:aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-central-1:196241772369:function:api_handler/invocations",
           "responses": {
             "default": {
               "statusCode": "200",
@@ -271,7 +271,7 @@
         ],
         "x-amazon-apigateway-integration": {
           "httpMethod": "POST",
-          "uri": "arn:aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-central-1:196241772369:function:cmtr-add4fd60-api_handler/invocations",
+          "uri": "arn:aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-central-1:196241772369:function:api_handler/invocations",
           "responses": {
             "default": {
               "statusCode": "200",
@@ -375,7 +375,7 @@
         },
         "x-amazon-apigateway-integration": {
           "httpMethod": "POST",
-          "uri": "arn:aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-central-1:196241772369:function:cmtr-add4fd60-api_handler/invocations",
+          "uri": "arn:aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-central-1:196241772369:function:api_handler/invocations",
           "responses": {
             "default": {
               "statusCode": "200",
@@ -485,7 +485,7 @@
         ],
         "x-amazon-apigateway-integration": {
           "httpMethod": "POST",
-          "uri": "arn:aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-central-1:196241772369:function:cmtr-add4fd60-api_handler/invocations",
+          "uri": "arn:aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-central-1:196241772369:function:api_handler/invocations",
           "responses": {
             "default": {
               "statusCode": "200",
@@ -599,7 +599,7 @@
         },
         "x-amazon-apigateway-integration": {
           "httpMethod": "POST",
-          "uri": "arn:aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-central-1:196241772369:function:cmtr-add4fd60-api_handler/invocations",
+          "uri": "arn:aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-central-1:196241772369:function:api_handler/invocations",
           "responses": {
             "default": {
               "statusCode": "200",
